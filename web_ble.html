@@ -21,10 +21,10 @@
     <h1>mPers Web BLE Application</h1>
     <button id="connectBleButton">Connect</button>
     <button id="disconnectBleButton">Disconnect</button>
-    <p>State: <strong><span id="bleState" style="color:#d13a30;">Disconnected</span></strong></p>
-    <h2>Terminal</h2>
+    <strong> State: <span id="bleState" style="color:#d13a30;">Disconnected</span></strong>
+    <h2 id="Terminal">Terminal</h2>
     <p><div id="valueContainer"></div></p>
-    <input type="text" id="textBox" name="textBox" size="50"></input>
+    <input type="text" id="textBox" name="textBox" size="70" onkeydown="if(event.keyCode===13) writeOnCharacteristic(textBox.value + '\n')"></input>
     <button id="sendButton">Send</button>
     <button id="clearButton">Clear</button>
     <p>Last value sent: <span id="valueSent"></span></p>
@@ -41,6 +41,7 @@
     const latestValueSent = document.getElementById('valueSent');
     const bleStateContainer = document.getElementById('bleState');
     const timestampContainer = document.getElementById('timestamp');
+    const terminalHeader = document.getElementById('Terminal');
 
     //Define BLE Device Specs
     var bleService = '0000abf0-0000-1000-8000-00805f9b34fb';
@@ -65,6 +66,7 @@
     // Write to the ESP32 LED Characteristic
     sendButton.addEventListener('click', () => writeOnCharacteristic(textBox.value + '\n'));
     clearButton.addEventListener('click', () => textBox.value = "");
+    terminalHeader.addEventListener('click', () => retrievedValue.innerHTML = "");
 
     // Check if BLE is available in your Browser
     function isWebBluetoothEnabled() {
@@ -132,7 +134,13 @@
     function handleCharacteristicChange(event) {
         newValueReceived = new TextDecoder().decode(event.target.value);
         console.log("Characteristic value changed: ", newValueReceived);
-        retrievedValue.innerHTML += newValueReceived
+        // Check if newValueReceived contains '\n'
+        if (newValueReceived.includes('\n')) {
+        // Split the string by '\n' and join with '<br>' to add a new line
+        newValueReceived = newValueReceived.split('\n').join('<br>');
+        }
+
+        retrievedValue.innerHTML += newValueReceived;
         timestampContainer.innerHTML = getDateTime();
     }
 
@@ -147,6 +155,13 @@
                 .then(() => {
                     latestValueSent.innerHTML = value;
                     console.log("Value written to writeCharacteristic:", value);
+
+                    // Check if the value is 'reset' or 'shutdown'
+                    if (value.toLowerCase() === 'reset\n' || value.toLowerCase() === 'shutdown\n') {
+                        // Disconnect from the device
+                        disconnectDevice();
+                        console.log("Device disconnected.");
+                    }    
                 })
                 .catch(error => {
                     console.error("Error writing to write characteristic: ", error);
