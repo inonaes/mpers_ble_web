@@ -4,13 +4,86 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f2f2f2;
+    }
+
+    #header {
+        background-color: #333333;
+        color: white;
+        padding: 10px;
+        text-align: center;
+    }
+
+    #container {
+        max-width: 80%;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1, h2 {
+        color: #333;
+    }
+
+    button {
+        margin: 5px;
+        padding: 8px 12px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
     #valueContainer {
-        width: 600px;
+        width: 98%;
         height: 300px;
-        resize: both;
         overflow: auto;
         border: 1px solid #ccc;
         padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    #textBox {
+        width: calc(100% - 168px); /* Adjust the width as needed */
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-right: 10px;
+    }
+
+    #sendButton, #clearButton {
+        padding: 8px 12px;
+        background-color: #28a745;
+    }
+
+    #clearButton {
+        background-color: #dc3545;
+    }
+
+    span.timestamp {
+        font-size: 12px;
+        color: #888;
+    }
+
+    a {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
     }
 </style>
 
@@ -19,17 +92,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="">
 </head><body>
-    <h1>mPers Web BLE Application</h1>
-    <button id="connectBleButton">Connect</button>
-    <button id="disconnectBleButton">Disconnect</button>
-    <strong> State: <span id="bleState" style="color:#d13a30;">Disconnected</span></strong>
-    <h2 id="Terminal">Terminal</h2>
-    <p><div id="valueContainer"></div></p>
-    <input type="text" id="textBox" name="textBox" size="70" onkeydown="if(event.keyCode===13) { writeOnCharacteristic(textBox.value + '\n'); textBox.value= '';}"></input>
-    <button id="sendButton">Send</button>
-    <button id="clearButton">Clear</button>
-    <p>Last value sent: <span id="valueSent"></span></p>
-    <p>Last reading: <span id="timestamp"></span></p>
+    <div id="header" style="display: flex; align-items: center;">
+        <img src="logo.png" alt="mPers Logo" width="80px" height="80px" style="margin-right: 420px;">
+        <h1 style="color: white;">mPers Web BLE Application</h1>
+    </div>
+    <div id="container">
+        <button id="connectBleButton">Connect</button>
+        <button id="disconnectBleButton">Disconnect</button>
+        <strong>State: <span id="bleState" style="color:#d13a30;">Disconnected</span></strong>
+        <h2 id="Terminal">Terminal</h2>
+        <div id="valueContainer"></div>
+        <div>
+            <input type="text" id="textBox" name="textBox" placeholder="Enter your message..." onkeydown="if(event.keyCode===13) { writeOnCharacteristic(textBox.value + '\n'); textBox.value= '';}">
+            <button id="sendButton">Send</button>
+            <button id="clearButton">Clear</button>
+        </div>
+        <p>Last value sent: <span id="valueSent"></span></p>
+        <p class="timestamp">Last reading: <span id="timestamp"></span></p>
+    </div>
     <p><a href="https://www.essence-grp.com/">Created by essence 2024</a></p>
 </body>
 <script>
