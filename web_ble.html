@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="bluetooth.png">
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -242,6 +243,15 @@
         let newValueReceived = new TextDecoder().decode(event.target.value);
         console.log("Characteristic value changed: ", newValueReceived);
 
+        // display data written between angular brackets, without removing text formatting
+        if (newValueReceived.includes('<')) {
+            newValueReceived = newValueReceived.split('<').join('&lt;');
+        }
+
+        if (newValueReceived.includes('>')) {
+            newValueReceived = newValueReceived.split('>').join('&gt;');
+        }
+
         // Replace color codes with corresponding HTML span elements and remove color codes
         Object.keys(colorMap).forEach(colorName => {
         const colorCode = colorMap[colorName];
@@ -249,15 +259,13 @@
         newValueReceived = newValueReceived.replace(colorPattern, `<span style="color: ${colorName.toLowerCase()}">`).replace(new RegExp(escapeRegExp(RESET), 'g'), '</span>');
         });
 
-        // Add closing span tags
-        newValueReceived += '</span>'.repeat(Object.keys(colorMap).length);
-
         // Split the string by '\n' and join with '<br>' to add a new line
         if (newValueReceived.includes('\n')) {
             newValueReceived = newValueReceived.split('\n').join('<br>');
         }
 
-        retrievedValue.innerHTML += newValueReceived;
+        // Append the new value to the existing value
+        retrievedValue.innerHTML  += newValueReceived;
 
         // Automatically scroll to the bottom of the scrollable box
         retrievedValue.scrollTop = retrievedValue.scrollHeight;
